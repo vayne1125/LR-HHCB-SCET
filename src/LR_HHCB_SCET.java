@@ -48,8 +48,18 @@ public class LR_HHCB_SCET {
         setUp(pairingParametersFileName, SPPFileName, PBFileName, CBFileName);
 
         String PBSenderFileName = dir + "pbsender.properties";
-        PB_Entity entity = pb_pks.createEntity(PBSenderFileName);
+        String PBSenderId = "Alice@gmail.com";
+        PB_Entity PBSender = pb_pks.createEntity(PBSenderId,PBSenderFileName);
 
+        String PBReceiverFileName = dir + "pbreceiver.properties";
+        String PBReceiverId = "Bob@gmail.com";
+        PB_Entity PBReceiver = pb_pks.createEntity(PBReceiverId,PBReceiverFileName);
+
+        // PBSender 加密訊息給 PBReceiver
+        String CT_PB2PB_FileName = dir + "ctpb2pb.properties";
+        String msg = "Hello, I'm Alice! How are you, Bob?";
+        PBSender.signcryption(msg,PBReceiverFileName,CT_PB2PB_FileName);
+        // PBReceiver 解密 PBSender 的訊息
 
     }
 }

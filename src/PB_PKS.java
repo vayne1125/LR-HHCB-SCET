@@ -7,7 +7,6 @@ import java.util.Base64;
 import java.util.Properties;
 
 public class PB_PKS{
-
     public Element CAPk;
     private Element CASk0,CASk1;
     private String pairingParametersFileName, SPPFileName;
@@ -51,8 +50,8 @@ public class PB_PKS{
         Tools.storePropToFile(prop,CAFileName);
     }
 
-    public PB_Entity createEntity(String entityFileName){
-        PB_Entity entity = new PB_Entity(pairingParametersFileName,SPPFileName,entityFileName);
+    public PB_Entity createEntity(String id,String entityFileName){
+        PB_Entity entity = new PB_Entity(pairingParametersFileName,SPPFileName,id, entityFileName);
         crtGen(entity);
         return entity;
     }
@@ -73,7 +72,7 @@ public class PB_PKS{
         a = Zq.newRandomElement().getImmutable();
         Element crt0 = P.mulZn(a).getImmutable();
         byte[] idPB_Byte = Tools.HF0(entityId,entityPk1,entityPk2,crt0);
-        Element idPB = Zq.newElementFromBytes(idPB_Byte).getImmutable();;
+        Element idPB = Zq.newElementFromHash(idPB_Byte,0,idPB_Byte.length).getImmutable();
         Element SidPBT = S.add(T.mulZn(idPB)).getImmutable();
         Element TC = CASk1.add(SidPBT.mulZn(a)).getImmutable();
         Element crt1 = CASk0.add(TC).getImmutable();

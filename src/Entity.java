@@ -1,6 +1,6 @@
 public interface Entity {
-    void selfKeyGen(String id, String entityFileName);
+    void selfKeyGen();
     void tdGen();
-    void signcryption();
+    void signcryption(String msg, String receiverFileName,String CTFileName);
     void unSigncryption();
 }

@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Properties;
+import java.util.Random;
 
 public class Tools {
 //    private Pairing bp;
@@ -63,11 +64,58 @@ public class Tools {
             return sha1(hash_str);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            System.out.println("HF0、HF1: error!");
             System.exit(-1);
         }
         return null;
     }
 
+    public static byte[] HF1(String id, Element a, Element b, Element c) {
+        return HF0(id,a,b,c);
+    }
+
+    public static byte[] HF2( Element a, Element b) {
+        String a_str = Base64.getEncoder().encodeToString(a.toBytes());
+        String b_str = Base64.getEncoder().encodeToString(b.toBytes());
+        String hash_str = a_str + b_str;
+        // byte[] rt;
+        try {
+            return sha1(hash_str);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF2: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    public static Element HF3(Element a,String pairingParametersFileName) {
+        String hash_str = Base64.getEncoder().encodeToString(a.toBytes());
+        Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
+        Field G = bp.getG1();
+        try {
+            byte[] hashByte =  sha1(hash_str);
+            Element rt = G.newElementFromHash(hashByte,0,hashByte.length).getImmutable();
+            return rt;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF3: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    public  static byte[] genSk(){
+        Random random = new Random();
+        byte[] randomBytes = new byte[20];
+        random.nextBytes(randomBytes);
+        return randomBytes;
+    }
+
+    public static byte[] SE(String msg, byte[] sk){
+        byte[] msgByte = Base64.getDecoder().decode(msg);
+
+    }
     public static byte[] sha1(String content) throws NoSuchAlgorithmException{
         MessageDigest instance = MessageDigest.getInstance("SHA-1");
         instance.update(content.getBytes());
