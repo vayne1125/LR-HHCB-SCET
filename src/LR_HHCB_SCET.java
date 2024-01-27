@@ -57,9 +57,11 @@ public class LR_HHCB_SCET {
 
         // PBSender 加密訊息給 PBReceiver
         String CT_PB2PB_FileName = dir + "ctpb2pb.properties";
-        String msg = "Hello, I'm Alice! How are you, Bob?";
+        String msg = "Hello, I'm Alice! How are you Bob?";
         PBSender.signcryption(msg,PBReceiverFileName,CT_PB2PB_FileName);
-        // PBReceiver 解密 PBSender 的訊息
 
+        // PBReceiver 解密 PBSender 的訊息
+        String msg_ = PBReceiver.unSigncryption(PBSenderFileName,CT_PB2PB_FileName);
+        System.out.println("解密: " + msg_);
     }
 }

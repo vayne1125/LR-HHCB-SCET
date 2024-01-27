@@ -13,23 +13,7 @@ import java.util.Properties;
 import java.util.Random;
 
 public class Tools {
-//    private Pairing bp;
-//    private Field G,Zq;
-//    private Properties SPP;
-//    private Element P;
-//    public Tools(String pairingParametersFileName, String SPPFileName){
-//        // pairing
-//        this.bp = PairingFactory.getPairing(pairingParametersFileName);
-//        this.G = bp.getG1();
-//        this.Zq = bp.getZr();
-//
-//        // 將公開參數 SPP 讀入
-//        this.SPP = Tools.loadPropFromFile(SPPFileName);
-//
-//        // 還原 P(G 的 generator)
-//        String P_str = SPP.getProperty("P");
-//        this.P = G.newElementFromBytes(Base64.getDecoder().decode(P_str)).getImmutable();
-//    }
+
     public static void storePropToFile(Properties prop, String fileName){
         try(FileOutputStream out = new FileOutputStream(fileName)){
             prop.store(out,null);
@@ -105,6 +89,50 @@ public class Tools {
         return null;
     }
 
+    public static byte[] HF6(byte[] a){
+        try {
+            return sha1(Base64.getEncoder().encodeToString(a));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF6: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    public static Element HF7(String msg,String pairingParametersFileName){
+        Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
+        Field G = bp.getG1();
+        try {
+            byte[] hashByte =  sha1(msg);
+            Element rt = G.newElementFromHash(hashByte,0,hashByte.length).getImmutable();
+            return rt;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF7: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    public static byte[] HF8(String msg,byte[] sk, Element CT0, byte[] CT1, byte[] CT2,Element CT3, Element CT4){
+        String sk_str = Base64.getEncoder().encodeToString(sk);
+        String CT0_str = Base64.getEncoder().encodeToString(CT0.toBytes());
+        String CT1_str = Base64.getEncoder().encodeToString(CT1);
+        String CT2_str = Base64.getEncoder().encodeToString(CT2);
+        String CT3_str = Base64.getEncoder().encodeToString(CT3.toBytes());
+        String CT4_str = Base64.getEncoder().encodeToString(CT4.toBytes());
+        String hash_str = msg + sk_str + CT0_str + CT1_str + CT2_str + CT3_str + CT4_str;
+        try {
+            return sha1(hash_str);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF8: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
     public  static byte[] genSk(){
         Random random = new Random();
         byte[] randomBytes = new byte[20];
@@ -113,9 +141,35 @@ public class Tools {
     }
 
     public static byte[] SE(String msg, byte[] sk){
-        byte[] msgByte = Base64.getDecoder().decode(msg);
-
+        byte[] msgByte = msg.getBytes();
+        int skLen = sk.length;
+        byte[] rt = new byte[msgByte.length];
+        for(int i=0;i<msgByte.length;i++){
+            rt[i] = (byte) (msgByte[i] ^ sk[i%skLen]);
+        }
+        return rt;
     }
+
+    public static String DE(byte[] CT1, byte[] sk_){
+        System.out.println(CT1.length+ " " +sk_.length);
+        int skLen = sk_.length;
+        byte[] rt = new byte[CT1.length];
+        for(int i=0;i<CT1.length;i++){
+            rt[i] = (byte) (CT1[i] ^ sk_[i%skLen]);
+        }
+        return new String(rt);
+    }
+
+    public static byte[] XOR(byte[] x, byte[] y){
+
+        byte[] rt = new byte[x.length];
+        for(int i=0;i<x.length;i++){
+            rt[i] = (byte) (x[i] ^ y[i]);
+        }
+        // System.out.println(new String(msgByte));
+        return rt;
+    }
+
     public static byte[] sha1(String content) throws NoSuchAlgorithmException{
         MessageDigest instance = MessageDigest.getInstance("SHA-1");
         instance.update(content.getBytes());
