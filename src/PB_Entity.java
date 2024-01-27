@@ -20,7 +20,6 @@ public class PB_Entity implements Entity{
         this.id = id;
         this.entityFileName = entityFileName;
         this.memberOf = "PB";
-
         selfKeyGen();
     }
 
@@ -67,9 +66,32 @@ public class PB_Entity implements Entity{
         Tools.storePropToFile(prop,entityFileName);
     }
     @Override
-    public void tdGen(){
+    public void TDGen(String tdFileName){
+        // pairing
+        Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
+        Field G = bp.getG1();
+        Field Zq = bp.getZr();
 
+        // 將公開參數 SPP 讀入
+        Properties SPP = Tools.loadPropFromFile(SPPFileName);
+
+        // 還原 P (G 的 generator)
+        String P_str = SPP.getProperty("P");
+        Element P = G.newElementFromBytes(Base64.getDecoder().decode(P_str)).getImmutable();
+
+        // update self sk
+        Element r2 = Zq.newRandomElement().getImmutable();
+        Element r2P = P.mulZn(r2).getImmutable();
+        sk20 = sk20.add(r2P).getImmutable();
+        sk21 = sk21.sub(r2P).getImmutable();
+
+        // 將 pk 以文件方式存起來
+        Properties prop = new Properties();
+        prop.setProperty("TD", Base64.getEncoder().encodeToString((sk20.add(sk21)).toBytes()));
+        prop.setProperty("memberOf", memberOf);
+        Tools.storePropToFile(prop,tdFileName);
     }
+
     @Override
     public void signcryption(String msg, String receiverFileName,String CTFileName){
         // pairing
@@ -139,11 +161,11 @@ public class PB_Entity implements Entity{
 
         // CT3
         Element t = Zq.newRandomElement().getImmutable();
-        Element CT3 = P.mulZn(t);
+        Element CT3 = P.mulZn(t).getImmutable();
 
         // CT4
-        Element msgHash2G = Tools.HF7(msg,pairingParametersFileName);
-        Element CT4 = TT.add(msgHash2G.mulZn(h));
+        Element msgHash2G = Tools.HF7(msg,pairingParametersFileName).getImmutable();
+        Element CT4 = TT.add(msgHash2G.mulZn(t)).getImmutable();
 
         // CT5
         byte[] n_byte = Tools.HF8(msg,sk,CT0,CT1,CT2,CT3,CT4);

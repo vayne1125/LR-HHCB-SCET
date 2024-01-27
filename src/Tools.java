@@ -89,6 +89,40 @@ public class Tools {
         return null;
     }
 
+    public static byte[] HF4( Element a, Element b, Element c, Element d) {
+        String a_str = Base64.getEncoder().encodeToString(a.toBytes());
+        String b_str = Base64.getEncoder().encodeToString(b.toBytes());
+        String c_str = Base64.getEncoder().encodeToString(c.toBytes());
+        String d_str = Base64.getEncoder().encodeToString(d.toBytes());
+        String hash_str = a_str + b_str + c_str + d_str;
+        // byte[] rt;
+        try {
+            return sha1(hash_str);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF2: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    public static Element HF5(Element a,Element b, String pairingParametersFileName) {
+        String a_str = Base64.getEncoder().encodeToString(a.toBytes());
+        String b_str = Base64.getEncoder().encodeToString(b.toBytes());
+        String hash_str = a_str + b_str;
+        Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
+        Field G = bp.getG1();
+        try {
+            byte[] hashByte =  sha1(hash_str);
+            Element rt = G.newElementFromHash(hashByte,0,hashByte.length).getImmutable();
+            return rt;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.out.println("HF3: error!");
+            System.exit(-1);
+        }
+        return null;
+    }
     public static byte[] HF6(byte[] a){
         try {
             return sha1(Base64.getEncoder().encodeToString(a));
@@ -151,7 +185,6 @@ public class Tools {
     }
 
     public static String DE(byte[] CT1, byte[] sk_){
-        System.out.println(CT1.length+ " " +sk_.length);
         int skLen = sk_.length;
         byte[] rt = new byte[CT1.length];
         for(int i=0;i<CT1.length;i++){
