@@ -14,7 +14,7 @@ public class PB_PKS{
     private Field G,Zq;
     private Properties SPP;
     private Element P,S,T;
-    public PB_PKS(String pairingParametersFileName, String SPPFileName, String CAFileName){
+    public PB_PKS(String pairingParametersFileName, String SPPFileName){
         this.pairingParametersFileName = pairingParametersFileName;
         this.SPPFileName = SPPFileName;
 
@@ -45,9 +45,9 @@ public class PB_PKS{
         CASk1 = CASK.sub(CASk0).getImmutable();
 
         // 將 pk 以文件方式存起來
-        Properties prop = new Properties();
-        prop.setProperty("CAPk", Base64.getEncoder().encodeToString(CAPk.toBytes()));
-        Tools.storePropToFile(prop,CAFileName);
+//        Properties prop = new Properties();
+//        prop.setProperty("CAPk", Base64.getEncoder().encodeToString(CAPk.toBytes()));
+//        Tools.storePropToFile(prop,CAFileName);
     }
 
     public PB_Entity createEntity(String id,String entityFileName){
@@ -65,8 +65,8 @@ public class PB_PKS{
         // 更新 sk
         Element a = Zq.newRandomElement().getImmutable();
         Element aP = P.mulZn(a).getImmutable();
-        CASk0.add(aP);
-        CASk1.sub(aP);
+        CASk0 = CASk0.add(aP).getImmutable();
+        CASk1 = CASk1.sub(aP).getImmutable();
 
         // 製作 CRT0, CRT1
         a = Zq.newRandomElement().getImmutable();

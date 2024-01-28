@@ -36,8 +36,13 @@ public class LR_HHCB_SCET {
         SPP.setProperty("V2", Base64.getEncoder().encodeToString(V2.toBytes()));
         Tools.storePropToFile(SPP,SPPFileName);
 
-        pb_pks = new PB_PKS(pairingParametersFileName,SPPFileName, PBFileName);
-        cb_pks = new CB_PKS(pairingParametersFileName,SPPFileName, CBFileName);
+        pb_pks = new PB_PKS(pairingParametersFileName,SPPFileName);
+        cb_pks = new CB_PKS(pairingParametersFileName,SPPFileName);
+
+        SPP.setProperty("PBCAPK", Base64.getEncoder().encodeToString(pb_pks.CAPk.toBytes()));
+        SPP.setProperty("CBCAPK", Base64.getEncoder().encodeToString(cb_pks.CAPk.toBytes()));
+        Tools.storePropToFile(SPP,SPPFileName);
+
         cloud = new Cloud(pairingParametersFileName);
     }
     // 建立 pb_pks, cb_pks
@@ -61,6 +66,14 @@ public class LR_HHCB_SCET {
         String PBReceiverId = "pbreceiver@gmail.com";
         PB_Entity PBReceiver = pb_pks.createEntity(PBReceiverId,PBReceiverFileName);
 
+        String CBSenderFileName = entityDir + "cbsender.properties";
+        String CBSenderId = "cbsender@gmail.com";
+        CB_Entity CBSender = cb_pks.createEntity(CBSenderId,CBSenderFileName);
+
+        String CBReceiverFileName = entityDir + "cbreceiver.properties";
+        String CBReceiverId = "cbreceiver@gmail.com";
+        CB_Entity CBReceiver = cb_pks.createEntity(CBReceiverId,CBReceiverFileName);
+
         // PBSender 加密訊息給 PBReceiver
         String CTDir = "data/ct/";
         String CT_PB2PB_FileName = CTDir + "pb2pb.properties";
@@ -70,6 +83,16 @@ public class LR_HHCB_SCET {
         // PBReceiver 解密 PBSender 的訊息
         String msg_ = PBReceiver.unSigncryption(PBSenderFileName,CT_PB2PB_FileName);
         System.out.println("解密: " + msg_);
+
+        // CBSender 加密訊息給 PBReceiver
+        String CT_CB2CB_FileName = CTDir + "cb2cb.properties";
+//        String msg = "Hello, I'm Alice! How are you Bob? 中文測試~";
+        CBSender.signcryption(msg,CBReceiverFileName,CT_CB2CB_FileName);
+
+        // CBReceiver 解密 PBSender 的訊息
+        msg_ = CBReceiver.unSigncryption(CBSenderFileName,CT_CB2CB_FileName);
+        System.out.println("解密: " + msg_);
+
 
         // 相等性測試-----------------------------------------------------------------
         // 創造 Entity;
