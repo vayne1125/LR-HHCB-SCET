@@ -48,6 +48,15 @@ public class Cloud {
             String PBTDA_str = TDA.getProperty("TD");
             Element PBTDA = G.newElementFromBytes(Base64.getDecoder().decode(PBTDA_str)).getImmutable();
             RA = CTA4.sub(Tools.HF3(bp.pairing(CTA0,PBTDA), pairingParametersFileName)).getImmutable();
+        }else if (memberOfA.equals("CB")) {
+            String CBTDA1_str = TDA.getProperty("TD1");
+            String CBTDA2_str = TDA.getProperty("TD2");
+            Element CBTDA1 = G.newElementFromBytes(Base64.getDecoder().decode(CBTDA1_str)).getImmutable();
+            Element CBTDA2 = G.newElementFromBytes(Base64.getDecoder().decode(CBTDA2_str)).getImmutable();
+            RA = CTA4.sub(Tools.HF5(bp.pairing(CTA0,CBTDA1), bp.pairing(CTA0,CBTDA2), pairingParametersFileName)).getImmutable();
+        } else {
+            System.out.println("非法 Entity");
+            System.exit(-1);
         }
 
 
@@ -57,6 +66,15 @@ public class Cloud {
             String PBTDB_str = TDB.getProperty("TD");
             Element PBTDB = G.newElementFromBytes(Base64.getDecoder().decode(PBTDB_str)).getImmutable();
             RB = CTB4.sub(Tools.HF3(bp.pairing(CTB0,PBTDB), pairingParametersFileName)).getImmutable();
+        }else if (memberOfB.equals("CB")) {
+            String CBTDB1_str = TDB.getProperty("TD1");
+            String CBTDB2_str = TDB.getProperty("TD2");
+            Element CBTDB1 = G.newElementFromBytes(Base64.getDecoder().decode(CBTDB1_str)).getImmutable();
+            Element CBTDB2 = G.newElementFromBytes(Base64.getDecoder().decode(CBTDB2_str)).getImmutable();
+            RB = CTB4.sub(Tools.HF5(bp.pairing(CTB0,CBTDB1), bp.pairing(CTB0,CBTDB2), pairingParametersFileName)).getImmutable();
+        } else {
+            System.out.println("非法 Entity");
+            System.exit(-1);
         }
 
 

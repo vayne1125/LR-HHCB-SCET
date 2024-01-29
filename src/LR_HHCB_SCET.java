@@ -74,25 +74,46 @@ public class LR_HHCB_SCET {
         String CBReceiverId = "cbreceiver@gmail.com";
         CB_Entity CBReceiver = cb_pks.createEntity(CBReceiverId,CBReceiverFileName);
 
+        // -------------------------test PB PB ------------------------------- //
         // PBSender 加密訊息給 PBReceiver
         String CTDir = "data/ct/";
         String CT_PB2PB_FileName = CTDir + "pb2pb.properties";
-        String msg = "Hello, I'm Alice! How are you Bob? 中文測試~";
+        String msg = "Hello, I'm PBSender! How are you PBReceiver? 我來自 PB 系統歐~";
         PBSender.signcryption(msg,PBReceiverFileName,CT_PB2PB_FileName);
 
         // PBReceiver 解密 PBSender 的訊息
         String msg_ = PBReceiver.unSigncryption(PBSenderFileName,CT_PB2PB_FileName);
-        System.out.println("解密: " + msg_);
+        System.out.println("PBReceiver 解 PBSender 的密文: " + msg_);
 
-        // CBSender 加密訊息給 PBReceiver
+        // -------------------------test CB CB ------------------------------- //
+        // CBSender 加密訊息給 CBReceiver
         String CT_CB2CB_FileName = CTDir + "cb2cb.properties";
-//        String msg = "Hello, I'm Alice! How are you Bob? 中文測試~";
+        msg = "Hello, I'm CBSender! How are you CBReceiver? 我來自 CB 系統歐~";
         CBSender.signcryption(msg,CBReceiverFileName,CT_CB2CB_FileName);
 
-        // CBReceiver 解密 PBSender 的訊息
+        // CBReceiver 解密 CBSender 的訊息
         msg_ = CBReceiver.unSigncryption(CBSenderFileName,CT_CB2CB_FileName);
-        System.out.println("解密: " + msg_);
+        System.out.println("CBReceiver 解 CBSender 的密文: " + msg_);
 
+        // -------------------------test PB CB ------------------------------- //
+        // PBSender 加密訊息給 CBReceiver
+        String CT_PB2CB_FileName = CTDir + "pb2cb.properties";
+        msg = "Hello, I'm PBSender! How are you CBReceiver? 我來自 PB 系統歐~";
+        PBSender.signcryption(msg,CBReceiverFileName,CT_PB2CB_FileName);
+
+        // CBReceiver 解密 PBSender 的訊息
+        msg_ = CBReceiver.unSigncryption(PBSenderFileName,CT_PB2CB_FileName);
+        System.out.println("CBReceiver 解 PBSender 的密文: " + msg_);
+
+        // -------------------------test CB PB ------------------------------- //
+        // CBSender 加密訊息給 PBReceiver
+        String CT_CB2PB_FileName = CTDir + "cb2pb.properties";
+        msg = "Hello, I'm CBSender! How are you PBReceiver? 我來自 PB 系統歐~";
+        CBSender.signcryption(msg,PBReceiverFileName,CT_CB2PB_FileName);
+
+        // PBReceiver 解密 CBSender 的訊息
+        msg_ = PBReceiver.unSigncryption(CBSenderFileName,CT_CB2PB_FileName);
+        System.out.println("PBReceiver 解 CBSender 的密文: " + msg_);
 
         // 相等性測試-----------------------------------------------------------------
         // 創造 Entity;
@@ -104,6 +125,14 @@ public class LR_HHCB_SCET {
         String PBBrId = "pbB@gmail.com";
         PB_Entity PBB = pb_pks.createEntity(PBBrId,PBBFileName);
 
+        String CBAFileName = entityDir + "cbA.properties";
+        String CBAId = "cbA@gmail.com";
+        CB_Entity CBA = cb_pks.createEntity(CBAId,CBAFileName);
+
+        String CBBFileName = entityDir + "cbB.properties";
+        String CBBrId = "cbB@gmail.com";
+        CB_Entity CBB = cb_pks.createEntity(CBBrId,CBBFileName);
+
         String TDDir = "data/td/";
         String PBATDFileName = TDDir + "pbA.properties";
         PBA.TDGen(PBATDFileName);
@@ -111,12 +140,39 @@ public class LR_HHCB_SCET {
         String PBBTDFileName = TDDir + "pbB.properties";
         PBB.TDGen(PBBTDFileName);
 
+        String CBATDFileName = TDDir + "cbA.properties";
+        CBA.TDGen(CBATDFileName);
+
+        String CBBTDFileName = TDDir + "cbB.properties";
+        CBB.TDGen(CBBTDFileName);
+
         // PB <-> PB
-        String CTAFileName = CTDir + "A.properties";
-        String CTBFileName = CTDir + "B.properties";
+        String CTAFileName = CTDir + "pbA.properties";
+        String CTBFileName = CTDir + "pbB.properties";
         PBSender.signcryption("Hello",PBAFileName,CTAFileName);
         PBSender.signcryption("Hello",PBBFileName,CTBFileName);
         System.out.println(cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,PBBTDFileName));
+
+        // CB <-> CB
+        CTAFileName = CTDir + "cbA.properties";
+        CTBFileName = CTDir + "cbB.properties";
+        PBSender.signcryption("Hello",CBAFileName,CTAFileName);
+        PBSender.signcryption("Hello",CBBFileName,CTBFileName);
+        System.out.println(cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,CBBTDFileName));
+
+        // PB <-> CB
+        CTAFileName = CTDir + "pbA.properties";
+        CTBFileName = CTDir + "cbB.properties";
+        PBSender.signcryption("Hello",PBAFileName,CTAFileName);
+        PBSender.signcryption("Hello",CBBFileName,CTBFileName);
+        System.out.println(cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,CBBTDFileName));
+
+        // CB <-> PB
+        CTAFileName = CTDir + "cbA.properties";
+        CTBFileName = CTDir + "pbB.properties";
+        PBSender.signcryption("Hello",CBAFileName,CTAFileName);
+        PBSender.signcryption("Hello",PBBFileName,CTBFileName);
+        System.out.println(cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,PBBTDFileName));
 
     }
 }

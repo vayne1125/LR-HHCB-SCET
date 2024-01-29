@@ -140,8 +140,8 @@ public abstract class Entity {
             Element idR = Zq.newElementFromHash(idR_Byte,0,idR_Byte.length).getImmutable();
             Element PBH1 = receiverPk1.powZn(h).getImmutable();
             Element PBH2 = receiverPk2.powZn(h).getImmutable();
-            Element PBH3 = CBCAPK.mul(bp.pairing(receiverPk3,U1.add(V1.mulZn(idR)))).getImmutable();
-            Element PBH4 = CBCAPK.mul(bp.pairing(receiverPk3,U2.add(V2.mulZn(idR)))).getImmutable();
+            Element PBH3 = (CBCAPK.mul(bp.pairing(receiverPk3,U1.add(V1.mulZn(idR))))).powZn(h).getImmutable();
+            Element PBH4 = (CBCAPK.mul(bp.pairing(receiverPk3,U2.add(V2.mulZn(idR))))).powZn(h).getImmutable();
             H = Tools.HF4(PBH1,PBH2,PBH3,PBH4);
             TT = Tools.HF5(PBH2,PBH4,pairingParametersFileName).getImmutable();
         }else{
@@ -207,9 +207,19 @@ public abstract class Entity {
         String P_str = SPP.getProperty("P");
         String S_str = SPP.getProperty("S");
         String T_str = SPP.getProperty("T");
+        String U1_str = SPP.getProperty("U1");
+        String U2_str = SPP.getProperty("U2");
+        String V1_str = SPP.getProperty("V1");
+        String V2_str = SPP.getProperty("V2");
+        String CBCAPK_str = SPP.getProperty("CBCAPK");
         Element P = G.newElementFromBytes(Base64.getDecoder().decode(P_str)).getImmutable();
         Element S = G.newElementFromBytes(Base64.getDecoder().decode(S_str)).getImmutable();
         Element T = G.newElementFromBytes(Base64.getDecoder().decode(T_str)).getImmutable();
+        Element U1 = G.newElementFromBytes(Base64.getDecoder().decode(U1_str)).getImmutable();
+        Element U2 = G.newElementFromBytes(Base64.getDecoder().decode(U2_str)).getImmutable();
+        Element V1 = G.newElementFromBytes(Base64.getDecoder().decode(V1_str)).getImmutable();
+        Element V2 = G.newElementFromBytes(Base64.getDecoder().decode(V2_str)).getImmutable();
+        Element CBCAPK = GT.newElementFromBytes(Base64.getDecoder().decode(CBCAPK_str)).getImmutable();
 
         // senderInfo
         String senderId = receiverInfo.getProperty("id");
@@ -218,7 +228,12 @@ public abstract class Entity {
         String pk2_str = receiverInfo.getProperty("pk2");
         Element senderPk1 = GT.newElementFromBytes(Base64.getDecoder().decode(pk1_str)).getImmutable();
         Element senderPk2 = GT.newElementFromBytes(Base64.getDecoder().decode(pk2_str)).getImmutable();
+        Element senderPk3 = G.newZeroElement();
 
+        if(senderMemberOf.equals("CB")){
+            String pk3_str = receiverInfo.getProperty("pk3");
+            senderPk3 = G.newElementFromBytes(Base64.getDecoder().decode(pk3_str)).getImmutable();
+        }
         // CT
         String CT0_str = CT.getProperty("CT0");
         String CT1_str = CT.getProperty("CT1");
@@ -251,12 +266,14 @@ public abstract class Entity {
         if(senderMemberOf.equals("PB")){
             testR = senderPk1.mul(senderPk2).mul(bp.pairing(CT0,S.add(T.mulZn(n_)))).getImmutable();
         } else if (senderMemberOf.equals("CB")) {
-
+            byte[] idCB_Byte = Tools.HF1(senderId,senderPk1,senderPk2,senderPk3);
+            Element idCB = Zq.newElementFromHash(idCB_Byte,0,idCB_Byte.length).getImmutable();
+            testR = CBCAPK.mul(CBCAPK).mul(senderPk1).mul(senderPk2).mul(bp.pairing(senderPk3,U1.add(V1.mulZn(idCB)))).mul(bp.pairing(senderPk3,U2.add(V2.mulZn(idCB)))).mul(bp.pairing(CT0,S.add(T.mulZn(n_)))).getImmutable();
         } else {
             System.out.println("非法 Entity");
             System.exit(-1);
         }
-        System.out.println("testMsg: " + msg_);
+        // System.out.println("testMsg: " + msg_);
         if(testL.isEqual(testR)) return msg_;
 
         return "invalid";
