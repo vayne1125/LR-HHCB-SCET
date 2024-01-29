@@ -1,0 +1,139 @@
+@startuml
+
+class LR_HHCB_SCET {
+  + pb_pks: PB_PKS
+  + cb_pks: CB_PKS
+  + cloud: Cloud
+  + setUp(pairingParametersFileName: String, SPPFileName: String): void
+  + main(args: String[]): void
+}
+
+class PB_PKS {
+  + CAPk: Element
+  - CASk0: Element
+  - CASk1: Element
+  - pairingParametersFileName: String
+  - SPPFileName: String
+  - bp: Pairing
+  - G: Field
+  - Zq: Field
+  - SPP: Properties
+  - P: Element
+  - S: Element
+  - T: Element
+  + PB_PKS(pairingParametersFileName: String, SPPFileName: String)
+  + createEntity(id: String, entityFileName: String): PB_Entity
+  + crtGen(entity: PB_Entity): void
+}
+
+class CB_PKS {
+  + CAPk: Element
+  - CASk0: Element
+  - CASk1: Element
+  - pairingParametersFileName: String
+  - SPPFileName: String
+  - bp: Pairing
+  - G: Field
+  - Zq: Field
+  - SPP: Properties
+  - P: Element
+  - U1: Element
+  - U2: Element
+  - V1: Element
+  - V2: Element
+  + CB_PKS(pairingParametersFileName: String, SPPFileName: String)
+  + createEntity(id: String, entityFileName: String): CB_Entity
+  + crtGen(entity: CB_Entity): void
+}
+
+class Cloud {
+  - pairingParametersFileName: String
+  + Cloud(pairingParametersFileName: String)
+  + equalityTest(CTAFileName: String, TDAFileName: String, CTBFileName: String, TDBFileName: String): boolean
+}
+
+class Tools {
+  + storePropToFile(prop: Properties, fileName: String): void
+  + loadPropFromFile(fileName: String): Properties
+  + HF0(id: String, a: Element, b: Element, c: Element): byte[]
+  + HF1(id: String, a: Element, b: Element, c: Element): byte[]
+  + HF2(a: Element, b: Element): byte[]
+  + HF3(a: Element, pairingParametersFileName: String): Element
+  + HF4(a: Element, b: Element, c: Element, d: Element): byte[]
+  + HF5(a: Element, b: Element, pairingParametersFileName: String): Element
+  + HF6(a: byte[]): byte[]
+  + HF7(msg: String, pairingParametersFileName: String): Element
+  + HF8(msg: String, sk: byte[], CT0: Element, CT1: byte[], CT2: byte[], CT3: Element, CT4: Element): byte[]
+  + genSk(): byte[]
+  + SE(msg: String, sk: byte[]): byte[]
+  + DE(CT1: byte[], sk_: byte[]): String
+  + XOR(x: byte[], y: byte[]): byte[]
+  + sha1(content: String): byte[]
+}
+
+abstract class Entity {
+  + pk1: Element
+  + pk2: Element
+  - sk10: Element
+  - sk11: Element
+  - sk20: Element
+  - sk21: Element
+  + memberOf: String
+  + id: String
+  # pairingParametersFileName: String
+  # SPPFileName: String
+  # entityFileName: String
+  + Entity(pairingParametersFileName: String, SPPFileName: String, id: String, entityFileName: String, memberOf: String)
+  - selfKeyGen(): void
+  + TDGen(tdFileName: String): void
+  # abstract storeTDFile(tdFileName: String): void
+  # abstract updateSk(P: Element): void
+  + signcryption(msg: String, receiverFileName: String, CTFileName: String): void
+  # abstract Element TSGen(): void
+  # abstract byte[] H_Gen(CT0: Element): void
+  + unSigncryption(senderFileName: String, CTFileName: String): String
+}
+
+class PB_Entity {
+  - crt0: Element
+  - crt1: Element
+  + PB_Entity(pairingParametersFileName: String, SPPFileName: String, id: String, entityFileName: String)
+  + setCrt(crt0: Element, crt1: Element): void
+  # updateSk(P: Element): void
+  # Element TSGen(): void
+  # byte[] H_Gen(CT0: Element): void
+  # storeTDFile(tdFileName: String): void
+}
+
+class CB_Entity {
+  + pk3: Element
+  - crt10: Element
+  - crt11: Element
+  - crt20: Element
+  - crt21: Element
+  + CB_Entity(pairingParametersFileName: String, SPPFileName: String, id: String, entityFileName: String)
+  + setCrt(pk3: Element, crt10: Element, crt11: Element, crt20: Element, crt21: Element): void
+  # updateSk(P: Element): void
+  # TSGen(): Element
+  # H_Gen(CT0: Element): byte[]
+  # storeTDFile(tdFileName: String): void
+}
+
+LR_HHCB_SCET *-- PB_PKS
+LR_HHCB_SCET *-- CB_PKS
+LR_HHCB_SCET --> Cloud
+
+LR_HHCB_SCET -> Tools : uses
+PB_PKS -> Tools: uses
+CB_PKS -> Tools: uses
+Cloud -> Tools: uses
+PB_Entity -> Tools: uses
+CB_Entity -> Tools: uses
+Entity -> Tools: uses
+
+PB_PKS *-- PB_Entity
+CB_PKS *-- CB_Entity
+
+PB_Entity --|> Entity
+CB_Entity --|> Entity
+@enduml

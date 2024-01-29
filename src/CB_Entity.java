@@ -12,7 +12,6 @@ public class CB_Entity extends Entity{
 
     public CB_Entity(String pairingParametersFileName, String SPPFileName, String id, String entityFileName){
         super(pairingParametersFileName,SPPFileName,id,entityFileName,"CB");
-        selfKeyGen();
     }
 
     public void setCrt(Element pk3, Element crt10, Element crt11, Element crt20, Element crt21) {

@@ -11,8 +11,7 @@ public class LR_HHCB_SCET {
     public static PB_PKS pb_pks;
     public static CB_PKS cb_pks;
     public static Cloud cloud;
-    public static Tools tools;
-    public static void setUp(String pairingParametersFileName, String SPPFileName, String PBFileName, String CBFileName){
+    public static void setUp(String pairingParametersFileName, String SPPFileName){
         // Pairing
         Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
         Field G = bp.getG1();
@@ -51,9 +50,7 @@ public class LR_HHCB_SCET {
         String dir = "data/";
         String pairingParametersFileName = dir + "a.properties";
         String SPPFileName = dir + "spp.properties";
-        String PBFileName = dir + "pbpks.properties";
-        String CBFileName = dir + "cbpks.properties";
-        setUp(pairingParametersFileName, SPPFileName, PBFileName, CBFileName);
+        setUp(pairingParametersFileName, SPPFileName);
 
         // 加解密測試-----------------------------------------------------------------
         // 創造 Entity

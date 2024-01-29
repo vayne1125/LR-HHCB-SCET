@@ -19,8 +19,9 @@ public abstract class Entity {
         this.id = id;
         this.entityFileName = entityFileName;
         this.memberOf = memberOf;
+        selfKeyGen();
     }
-    public void selfKeyGen(){
+    private void selfKeyGen(){
         // pairing
         Pairing bp = PairingFactory.getPairing(pairingParametersFileName);
         Field G = bp.getG1();
