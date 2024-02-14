@@ -1,11 +1,14 @@
 @startuml
+skinparam linetype ortho
+'skinparam classAttributeIconSize 0
+
 
 class LR_HHCB_SCET {
-  + pb_pks: PB_PKS
-  + cb_pks: CB_PKS
-  + cloud: Cloud
-  + setUp(pairingParametersFileName: String, SPPFileName: String): void
-  + main(args: String[]): void
+  {static}+ pb_pks: PB_PKS
+  {static}+ cb_pks: CB_PKS
+  {static}+ cloud: Cloud
+  {static}+ setUp(pairingParametersFileName: String, SPPFileName: String): void
+  {static}+ main(args: String[]): void
 }
 
 class PB_PKS {
@@ -53,45 +56,46 @@ class Cloud {
 }
 
 class Tools {
-  + storePropToFile(prop: Properties, fileName: String): void
-  + loadPropFromFile(fileName: String): Properties
-  + HF0(id: String, a: Element, b: Element, c: Element): byte[]
-  + HF1(id: String, a: Element, b: Element, c: Element): byte[]
-  + HF2(a: Element, b: Element): byte[]
-  + HF3(a: Element, pairingParametersFileName: String): Element
-  + HF4(a: Element, b: Element, c: Element, d: Element): byte[]
-  + HF5(a: Element, b: Element, pairingParametersFileName: String): Element
-  + HF6(a: byte[]): byte[]
-  + HF7(msg: String, pairingParametersFileName: String): Element
-  + HF8(msg: String, sk: byte[], CT0: Element, CT1: byte[], CT2: byte[], CT3: Element, CT4: Element): byte[]
-  + genSk(): byte[]
-  + SE(msg: String, sk: byte[]): byte[]
-  + DE(CT1: byte[], sk_: byte[]): String
-  + XOR(x: byte[], y: byte[]): byte[]
-  + sha1(content: String): byte[]
+  {static}+ storePropToFile(prop: Properties, fileName: String): void
+  {static}+ loadPropFromFile(fileName: String): Properties
+  {static}+ HF0(id: String, a: Element, b: Element, c: Element): byte[]
+  {static}+ HF1(id: String, a: Element, b: Element, c: Element): byte[]
+  {static}+ HF2(a: Element, b: Element): byte[]
+  {static}+ HF3(a: Element, pairingParametersFileName: String): Element
+  {static}+ HF4(a: Element, b: Element, c: Element, d: Element): byte[]
+  {static}+ HF5(a: Element, b: Element, pairingParametersFileName: String): Element
+  {static}+ HF6(a: byte[]): byte[]
+  {static}+ HF7(msg: String, pairingParametersFileName: String): Element
+  {static}+ HF8(msg: String, sk: byte[], CT0: Element, CT1: byte[], CT2: byte[], CT3: Element, CT4: Element): byte[]
+  {static}+ genSk(): byte[]
+  {static}+ SE(msg: String, sk: byte[]): byte[]
+  {static}+ DE(CT1: byte[], sk_: byte[]): String
+  {static}+ XOR(x: byte[], y: byte[]): byte[]
+  {static}+ sha1(content: String): byte[]
 }
 
 abstract class Entity {
   + pk1: Element
   + pk2: Element
+  + memberOf: String
+  + id: String
   - sk10: Element
   - sk11: Element
   - sk20: Element
   - sk21: Element
-  + memberOf: String
-  + id: String
   # pairingParametersFileName: String
   # SPPFileName: String
   # entityFileName: String
+
   + Entity(pairingParametersFileName: String, SPPFileName: String, id: String, entityFileName: String, memberOf: String)
-  - selfKeyGen(): void
   + TDGen(tdFileName: String): void
-  # abstract storeTDFile(tdFileName: String): void
-  # abstract updateSk(P: Element): void
   + signcryption(msg: String, receiverFileName: String, CTFileName: String): void
-  # abstract Element TSGen(): void
-  # abstract byte[] H_Gen(CT0: Element): void
   + unSigncryption(senderFileName: String, CTFileName: String): String
+  - selfKeyGen(): void
+  {abstract}# storeTDFile(tdFileName: String): void
+  {abstract}# updateSk(P: Element): void
+  {abstract}# Element TSGen(): void
+  {abstract}# byte[] H_Gen(CT0: Element): void
 }
 
 class PB_Entity {
@@ -119,21 +123,44 @@ class CB_Entity {
   # storeTDFile(tdFileName: String): void
 }
 
-LR_HHCB_SCET *-- PB_PKS
-LR_HHCB_SCET *-- CB_PKS
-LR_HHCB_SCET --> Cloud
+'Entity <|-- CB_Entity
+'Entity <|-- PB_Entity
 
-LR_HHCB_SCET -> Tools : uses
-PB_PKS -> Tools: uses
-CB_PKS -> Tools: uses
-Cloud -> Tools: uses
-PB_Entity -> Tools: uses
-CB_Entity -> Tools: uses
-Entity -> Tools: uses
+'LR_HHCB_SCET --> Cloud
+'LR_HHCB_SCET ----> PB_Entity
+'LR_HHCB_SCET ----> CB_Entity
+'LR_HHCB_SCET *-- PB_PKS
+'LR_HHCB_SCET *-- CB_PKS
 
-PB_PKS *-- PB_Entity
-CB_PKS *-- CB_Entity
+'LR_HHCB_SCET ---> Tools : uses
 
-PB_Entity --|> Entity
-CB_Entity --|> Entity
+
+'Tools <-- Cloud : uses
+'Tools <-- PB_PKS : uses
+'Tools <- CB_PKS : uses
+'Tools <----- PB_Entity : uses
+'Tools <----- CB_Entity : uses
+'Tools <- Entity : uses
+
+
+PB_PKS ----> Tools: uses
+CB_PKS ----> Tools: uses
+Cloud ----> Tools: uses
+'PB_Entity ----> Tools: uses
+'CB_Entity ----> Tools: uses
+'Entity --> Tools: uses
+
+PB_PKS *- PB_Entity
+CB_PKS *---- CB_Entity
+
+
+abstract class abstract_class {
+  + public
+  - private
+  # protect
+  {static} static
+  {abstract} abstract
+  # protect(ffffffffffffffffffffggggggggffffffffffffffffffffffffffffffffffff)
+}
+
 @enduml
