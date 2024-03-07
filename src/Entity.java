@@ -256,7 +256,7 @@ public abstract class Entity {
         // compute H', sk'
         byte[] H_ = H_Gen(CT0);
         byte[] sk_ = Tools.XOR(Tools.HF6(H_),CT2);
-        String msg_ = Tools.DE(CT1,sk_);
+        String msg_ = Tools.SD(CT1,sk_);
 
         // varify
         byte[] n_byte = Tools.HF8(msg_,sk_,CT0,CT1,CT2,CT3,CT4);

@@ -184,7 +184,7 @@ public class Tools {
         return rt;
     }
 
-    public static String DE(byte[] CT1, byte[] sk_){
+    public static String SD(byte[] CT1, byte[] sk_){
         int skLen = sk_.length;
         byte[] rt = new byte[CT1.length];
         for(int i=0;i<CT1.length;i++){

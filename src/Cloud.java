@@ -59,7 +59,6 @@ public class Cloud {
             System.exit(-1);
         }
 
-
         // RB
         Element RB = G.newZeroElement();
         if(memberOfB.equals("PB")){
@@ -76,7 +75,6 @@ public class Cloud {
             System.out.println("非法 Entity");
             System.exit(-1);
         }
-
 
         return bp.pairing(RA,CTB3).isEqual(bp.pairing(RB,CTA3));
     }

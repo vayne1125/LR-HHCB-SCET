@@ -112,6 +112,17 @@ public class LR_HHCB_SCET {
         msg_ = PBReceiver.unSigncryption(CBSenderFileName,CT_CB2PB_FileName);
         System.out.println("PBReceiver 解 CBSender 的密文: " + msg_);
 
+
+        System.out.println("\n\nTest: PBSender 加密訊息給 PBReceiver，但這封密文不小心落入 CBReceiver 手中");
+        // 加解密測試-----------------------------------------------------------------
+        // 解不開的例子: PBSender 加密訊息給 PBReceiver，但這封密文不小心落入 CBReceiver 手中
+        msg = "Hello, I'm PBSender! How are you PBReceiver? 我來自 PB 系統歐~";
+        PBSender.signcryption(msg,PBReceiverFileName,CT_PB2PB_FileName);
+
+        msg_ = CBReceiver.unSigncryption(PBSenderFileName,CT_PB2PB_FileName);
+        System.out.println("CBReceiver 解 PBSender 傳送給 PBReceiver 的密文: " + msg_);
+
+
         // 相等性測試-----------------------------------------------------------------
         // 創造 Entity;
         String PBAFileName = entityDir + "pbA.properties";
@@ -146,30 +157,60 @@ public class LR_HHCB_SCET {
         // PB <-> PB
         String CTAFileName = CTDir + "pbA.properties";
         String CTBFileName = CTDir + "pbB.properties";
-        PBSender.signcryption("Hello",PBAFileName,CTAFileName);
-        PBSender.signcryption("Hello",PBBFileName,CTBFileName);
-        System.out.println(cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,PBBTDFileName));
+        PBSender.signcryption("Hello，你好!",PBAFileName,CTAFileName);
+        CBSender.signcryption("Hello，你好!",PBBFileName,CTBFileName);
+        System.out.println("PBA 和 PBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,PBBTDFileName));
 
         // CB <-> CB
         CTAFileName = CTDir + "cbA.properties";
         CTBFileName = CTDir + "cbB.properties";
-        PBSender.signcryption("Hello",CBAFileName,CTAFileName);
-        PBSender.signcryption("Hello",CBBFileName,CTBFileName);
-        System.out.println(cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,CBBTDFileName));
+        PBSender.signcryption("Hello，你好!",CBAFileName,CTAFileName);
+        CBSender.signcryption("Hello，你好!",CBBFileName,CTBFileName);
+        System.out.println("CBA 和 CBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,CBBTDFileName));
 
         // PB <-> CB
         CTAFileName = CTDir + "pbA.properties";
         CTBFileName = CTDir + "cbB.properties";
-        PBSender.signcryption("Hello",PBAFileName,CTAFileName);
-        PBSender.signcryption("Hello",CBBFileName,CTBFileName);
-        System.out.println(cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,CBBTDFileName));
+        PBSender.signcryption("Hello，你好!",PBAFileName,CTAFileName);
+        PBSender.signcryption("Hello，你好!",CBBFileName,CTBFileName);
+        System.out.println("PBA 和 CBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,CBBTDFileName));
 
         // CB <-> PB
         CTAFileName = CTDir + "cbA.properties";
         CTBFileName = CTDir + "pbB.properties";
-        PBSender.signcryption("Hello",CBAFileName,CTAFileName);
-        PBSender.signcryption("Hello",PBBFileName,CTBFileName);
-        System.out.println(cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,PBBTDFileName));
+        CBSender.signcryption("Hello，你好!",CBAFileName,CTAFileName);
+        CBSender.signcryption("Hello，你好!",PBBFileName,CTBFileName);
+        System.out.println("CBA 和 PBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,PBBTDFileName));
 
+        // 相等性測試-----------------------------------------------------------------
+        // 密文不一樣的例子
+        // PB <-> PB
+        CTAFileName = CTDir + "pbA.properties";
+        CTBFileName = CTDir + "pbB.properties";
+        PBSender.signcryption("Hello!",PBAFileName,CTAFileName);
+        CBSender.signcryption("你好!",PBBFileName,CTBFileName);
+        System.out.println("PBA 和 PBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,PBBTDFileName));
+
+        // CB <-> CB
+        CTAFileName = CTDir + "cbA.properties";
+        CTBFileName = CTDir + "cbB.properties";
+        PBSender.signcryption("你好!",CBAFileName,CTAFileName);
+        CBSender.signcryption("你好~",CBBFileName,CTBFileName);
+        System.out.println("CBA 和 CBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,CBBTDFileName));
+
+        // PB <-> CB
+        CTAFileName = CTDir + "pbA.properties";
+        CTBFileName = CTDir + "cbB.properties";
+        PBSender.signcryption("HI~",PBAFileName,CTAFileName);
+        PBSender.signcryption("hi~",CBBFileName,CTBFileName);
+        System.out.println("PBA 和 CBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,PBATDFileName,CTBFileName ,CBBTDFileName));
+
+        // CB <-> PB
+        CTAFileName = CTDir + "cbA.properties";
+        CTBFileName = CTDir + "pbB.properties";
+        CBSender.signcryption("你好!",CBAFileName,CTAFileName);
+        CBSender.signcryption("你好~",PBBFileName,CTBFileName);
+        System.out.println("CBA 和 PBB 收到的密文進行相等性測試的結果:" + cloud.equalityTest(CTAFileName,CBATDFileName,CTBFileName ,PBBTDFileName));
     }
+
 }

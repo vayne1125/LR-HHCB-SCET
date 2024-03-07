@@ -43,11 +43,6 @@ public class PB_PKS{
         Element a = Zq.newRandomElement().getImmutable();
         CASk0 = P.mulZn(a).getImmutable();
         CASk1 = CASK.sub(CASk0).getImmutable();
-
-        // 將 pk 以文件方式存起來
-//        Properties prop = new Properties();
-//        prop.setProperty("CAPk", Base64.getEncoder().encodeToString(CAPk.toBytes()));
-//        Tools.storePropToFile(prop,CAFileName);
     }
 
     public PB_Entity createEntity(String id,String entityFileName){
